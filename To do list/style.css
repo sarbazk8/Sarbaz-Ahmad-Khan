@@ -1,0 +1,62 @@
+body{
+    background-color: rgb(0, 122, 221);
+}
+.img1{
+    display:flex;
+    justify-content: center;
+    
+}
+.clipboardimg{
+    width: 100px;
+    height: 100px;
+}
+.mainentry{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.entry{
+    display: flex;
+    justify-content: center;
+    background-color: black;
+    border-radius: 15px;
+    width: 600px;
+}
+img{
+    width: 30px;
+    height: 30px;
+    
+}
+button{
+    border-radius: 15px;
+}
+input{
+    background-color: black;
+    color: white;
+    width: 100%;
+    border-radius: 15px;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
+}
+button:hover{
+    cursor:pointer;
+}
+button:active{
+    background-image: url(clipboard.png);
+}
+.main_div{
+    display:flex;
+    justify-content: center;
+}
+.element_list{
+    display:flex;
+    justify-content: center;
+    width: 600px;
+    background-color: black;
+    border-radius: 15px;
+    margin-top: 20px;
+    height: 35px;
+    
+}
