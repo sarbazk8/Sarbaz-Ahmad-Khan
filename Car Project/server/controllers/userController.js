@@ -1,25 +1,40 @@
-const Userdata = require("../models/userdata")
+const {User , validate,validateAnt }= require("../models/userdata")
 const mongoose = require("mongoose")
+const bcrypt = require("bcrypt");
+
 
 const getUsers = async(req,res)=>{
-    const users = await Userdata.find({}).sort({createdAt: -1});
+    const users = await User.find({}).sort({createdAt: -1});
     res.status(200).json(users)
 };
 
-const createUser = async(req,res)=>{
-    const {name,email,password}=req.body;
-    try{
-        const user = await Userdata.create({
-            name,
-            email,
-            password
-        });
-       return res.status(200).json('User added');
-    }catch(error){
-        console.log("error while adding user" , error)
-        return res.status(400).json({message:"SOmething went wrong",error});
-    }
-};
+const createUser =async (req, res) => {
+	try {
+		const { error } = validate(req.body);
+		if (error)
+			return res.status(400).send({ message: error.details[0].message });
+
+		const user = await User.findOne({ email: req.body.email });
+		if (user)
+			return res
+				.status(409)
+				.send({ message: "User with given email already Exist!" });
+
+		const salt = await bcrypt.genSalt(Number(process.env.SALT));
+		const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+		await new User({ ...req.body, password: hashPassword }).save();
+		res.status(201).send({ message: "User created successfully" });
+	} catch (error) {
+		res.status(500).send({ message: "Internal Server Error" });
+	}
+}
+
+
+
+
+
+
 
 const getUser= async (req,res)=>{
     const {id} = req.params;
@@ -27,7 +42,7 @@ const getUser= async (req,res)=>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: "ID Not valid"});
     }
-    const user = await Userdata.findById(id);
+    const user = await User.findById(id);
     if(!user){
         return res.status(404).json({error: " No such User"});
     }
@@ -39,7 +54,7 @@ const deleteUser = async (req,res)=>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: "ID Not Valid"});
     }
-    const user = await Userdata.findOneAndDelete({_id: id});
+    const user = await User.findOneAndDelete({_id: id});
 
     if(!user){
         return res.status(404).json({error: "No Such User"});
@@ -54,7 +69,7 @@ const updateUser = async(req,res)=>{
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: "ID Not Valid"});
     }
-    const user = await Userdata.findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
         {_id: id },
         {
             ...req.body,
